@@ -1,0 +1,152 @@
+#! /bin/bash
+function stage()
+{
+	case $cmd in
+	1)	
+		stage1
+		;;	
+	2)	
+		stage2
+		;;
+	
+	3)	
+		echo "N/A"
+		;;
+	
+	4)	echo "N/A"	
+		;;	
+	esac
+
+}
+
+function stage1()
+{
+	echo "select scripts to run: "
+	printf "1: nmap \n"
+	read cmd1
+	case $cmd1 in
+		1)
+			echo "Running simplified nmap script.."
+			bash ./stage1/nmaps.sh		
+	esac	
+
+}
+
+function stage2()
+{	
+	printf "select scripts to run on msfconsole:\n"
+	printf "1: msfvenom\n2: Multihandler\n3: Eternalblue Scanner\n4: Eternalblue\n\n"	
+	read cmd2
+	case $cmd2 in
+		1)
+			printf "Running msfvenom...\n\n"
+			bash ./stage2/msfvenom.sh
+			
+	
+			printf "msfvenom completed! Do you want to start a server?[y/n]  "
+			read server
+			if [ $server = "Y" ] | [ $server = "y" ]
+			then
+				echo "setting up php server"
+				php -S 0.0.0.0:8000
+			else
+				printf "Understood, server will not start\n"
+	
+			fi
+			printf "Do you want to start a handler?[y/n]  "
+			read listener
+			if [ $listener = "Y" ] | [ $listener = "y" ]
+			then
+				echo "Opening multihandler"
+				bash ./stage2/mhandler.sh
+			else
+				printf "Understood, handler will not start\n"
+	
+			fi
+			;;
+	
+		2)	read -p "Using existing multihandler resource file?[y/n] " mh
+	
+			if [ -z $mh ]
+			then
+				mh="n"
+			fi
+	
+			if [ $mh = "y" ] || [ $mh = "Y" ]
+			then
+				if [ -f multihandler.rc ]
+				then
+					printf "running multihandler on new terminal...\n\n"
+					gnome-terminal -- msfconsole -q -r multihandler.rc
+					exit
+				else
+					printf "Error! File not found!"
+					exit
+				fi
+			fi
+			printf "Running multihandler generator...\n\n\n"
+			bash ./stage2/mhandler.sh
+			;;
+	
+		3)	read -p "Using existing ebs resource file?[y/n] " ebs
+	
+			if [ -z $ebs ]
+			then
+				ebs="n"
+			fi
+			if [ $ebs = "y" ] || [ $ebs = "Y" ]
+			then	
+				if [ -f ebs.rc ] 
+				then
+					printf "running eternalblue scanner on new terminal...\n\n"
+					gnome-terminal -- msfconsole -q -r ebs.rc
+					exit
+				else
+					printf "Error! File not found!"
+					exit
+				fi
+				
+			fi
+			printf "Running eternalblue scanner generator...\n\n\n"
+			bash ./stage2/ebluescan.sh
+			;;
+	
+		4)	read -p "Using existing eb resource file?[y/n] " eb
+		
+			if [ -z $eb ]
+			then
+				eb="n"
+			fi
+			
+			if [ $eb = "y" ] || [ $eb = "Y" ]
+			then	
+				if [ -f eb.rc ]
+				then
+					printf "running eternalblue on new terminal...\n\n"
+					gnome-terminal -- msfconsole -q -r eb.rc
+					exit
+				else
+					printf "Error! File not found!"
+					exit
+				fi
+				
+			fi
+			printf "Running eternalblue generator...\n\n\n"
+			bash ./stage2/eblue.sh
+			;;
+	
+		esac
+}
+
+echo "''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''"
+echo "'''''''''''''''''''''''''''''''''''Simple Use of macro''''''''''''''''''''''''''''''''''''''''''''''''"
+echo "''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''"
+
+printf "This is a simple macro made by me for the internship attack life cycle. \nThe aim of this program is to automate most of the input required for each program that will be used. \n"
+printf "\n\n"
+echo "Select the stages to macro: "
+printf "1: Stage 1 \n2: Stage 2 \n3: Stage 3 \n4: Stage 4 \n\n"
+read cmd
+stage
+
+echo "Hello World"
